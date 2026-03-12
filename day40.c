@@ -1,100 +1,65 @@
+/*
+Implement Heap Sort using a Max Heap to sort an array in ascending order. First build a max heap, then repeatedly extract the maximum element and place it at the end of the array.
+*/
 #include <stdio.h>
-#include <string.h>
 
-int heap[1000];
-int size = 0;
-
-void swap(int *a, int *b)
-{
-    int t = *a;
+// Function to swap two elements
+void swap(int *a, int *b) {
+    int temp = *a;
     *a = *b;
-    *b = t;
+    *b = temp;
 }
 
-void insert(int x)
-{
-    heap[size] = x;
-    int i = size;
-    size++;
+// Heapify function to maintain max heap property
+void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int left = 2*i + 1;
+    int right = 2*i + 2;
 
-    while(i > 0 && heap[(i-1)/2] > heap[i])
-    {
-        swap(&heap[i], &heap[(i-1)/2]);
-        i = (i-1)/2;
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+
+    if (largest != i) {
+        swap(&arr[i], &arr[largest]);
+        heapify(arr, n, largest);
     }
 }
 
-int extractmin()
-{
-    if(size == 0)
-        return -1;
+// Heap Sort function
+void heapSort(int arr[], int n) {
 
-    int min = heap[0];
-    heap[0] = heap[size-1];
-    size--;
+    // Build Max Heap
+    for (int i = n/2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
 
-    int i = 0;
-
-    while(1)
-    {
-        int left = 2*i + 1;
-        int right = 2*i + 2;
-        int smallest = i;
-
-        if(left < size && heap[left] < heap[smallest])
-            smallest = left;
-
-        if(right < size && heap[right] < heap[smallest])
-            smallest = right;
-
-        if(smallest != i)
-        {
-            swap(&heap[i], &heap[smallest]);
-            i = smallest;
-        }
-        else
-            break;
+    // Extract elements from heap
+    for (int i = n - 1; i > 0; i--) {
+        swap(&arr[0], &arr[i]);  // Move max to end
+        heapify(arr, i, 0);      // Heapify reduced heap
     }
-
-    return min;
 }
 
-int peek()
-{
-    if(size == 0)
-        return -1;
-    return heap[0];
-}
-
-int main()
-{
-    int n;
-
-    printf("enter number of operations: ");
-    scanf("%d", &n);
-
+// Function to print array
+void printArray(int arr[], int n) {
     for(int i = 0; i < n; i++)
-    {
-        char op[20];
+        printf("%d ", arr[i]);
+    printf("\n");
+}
 
-        printf("enter operation: ");
-        scanf("%s", op);
+int main() {
+    int arr[] = {12, 11, 13, 5, 6, 7};
+    int n = sizeof(arr) / sizeof(arr[0]);
 
-        if(strcmp(op,"insert") == 0)
-        {
-            int x;
-            scanf("%d",&x);
-            insert(x);
-        }
-        else if(strcmp(op,"extractMin") == 0)
-        {
-            printf("%d\n", extractmin());
-        }
-        else if(strcmp(op,"peek") == 0)
-        {
-            printf("%d\n", peek());
-        }
-    }
+    printf("Original array:\n");
+    printArray(arr, n);
+
+    heapSort(arr, n);
+
+    printf("Sorted array:\n");
+    printArray(arr, n);
 
     return 0;
 }
